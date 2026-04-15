@@ -34,6 +34,7 @@ async function fetchGithubData(username) {
 
     // 3. Process Data
     renderDashboard(userData, reposData);
+    startVibeLogs();
     
     // Switch Views
     heroSection.style.display = 'none';
@@ -138,6 +139,29 @@ function renderTopics(repos) {
   }
 }
 
+// --- AI VIBE LOGS ---
+function startVibeLogs() {
+  const container = document.getElementById('vibeLogs');
+  const logs = [
+    "[SYS] Analyzing codebase density...",
+    "[AI] Applying glassmorphism filters.",
+    "[SYS] Optimization: O(log n) achieved.",
+    "[AI] Ghost in the shell detected.",
+    "[SYS] Neural pathways synchronized.",
+    "[AI] Scaling vector assets...",
+    "[SYS] Deploying AI-powered UI components."
+  ];
+  let i = 0;
+  setInterval(() => {
+    const line = document.createElement('div');
+    line.className = 'log-line';
+    line.innerHTML = `<span>[VIBE]</span> ${logs[i % logs.length]}`;
+    container.appendChild(line);
+    if (container.children.length > 8) container.removeChild(container.firstChild);
+    i++;
+  }, 2000);
+}
+
 // Helpers
 function getLangColor(lang) {
   const colors = {
@@ -195,11 +219,26 @@ function initParticles() {
 
 function animateParticles() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  particles.forEach(p => {
+  particles.forEach((p, index) => {
     p.x += p.speedX;
     p.y += p.speedY;
     if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
     if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+    
+    // Neural Connections
+    for (let j = index + 1; j < particles.length; j++) {
+      const p2 = particles[j];
+      const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+      if (dist < 100) {
+        ctx.strokeStyle = `rgba(139, 92, 246, ${0.1 * (1 - dist/100)})`;
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+      }
+    }
+
     ctx.fillStyle = `rgba(124, 58, 237, ${p.opacity * 0.3})`;
     ctx.beginPath();
     ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
