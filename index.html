@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitHub Dashboard — Explore Profiles & Stats</title>
+  <meta name="description" content="A stunning GitHub profile dashboard with real-time stats, repository insights, contribution graphs, and language breakdowns." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Particle Canvas -->
+  <canvas id="particleCanvas"></canvas>
+
+  <!-- Noise Overlay -->
+  <div class="noise-overlay"></div>
+
+  <!-- ======================== NAVBAR ======================== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" class="nav-logo-icon">
+          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+        </svg>
+        <span class="nav-brand-text">GitVision</span>
+      </div>
+      <div class="nav-search-wrap">
+        <div class="nav-search" id="navSearchBar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" id="searchInput" placeholder="Search GitHub username…" autocomplete="off" />
+          <kbd class="search-kbd">Enter</kbd>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <a href="https://github.com" target="_blank" class="nav-btn nav-btn-ghost">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ======================== HERO ======================== -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="pulse-dot"></span>
+        <span>Live GitHub Analytics</span>
+      </div>
+      <h1 class="hero-title">
+        Explore GitHub <br />
+        <span class="gradient-text">Profiles & Stats</span>
+      </h1>
+      <p class="hero-subtitle">Beautiful dashboards for any GitHub user or organization — repositories, contributions, languages &amp; more.</p>
+      <div class="hero-search">
+        <div class="hero-search-inner">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="hero-search-icon">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" id="heroSearchInput" placeholder="Enter GitHub username (e.g. torvalds, yyx990803)" autocomplete="off" />
+          <button id="heroSearchBtn" class="hero-search-btn">
+            <span>Explore</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+        <div class="hero-suggestions">
+          <span class="suggestion-label">Try:</span>
+          <button class="suggestion-chip" data-user="torvalds">torvalds</button>
+          <button class="suggestion-chip" data-user="yyx990803">yyx990803</button>
+          <button class="suggestion-chip" data-user="gaearon">gaearon</button>
+          <button class="suggestion-chip" data-user="sindresorhus">sindresorhus</button>
+          <button class="suggestion-chip" data-user="microsoft">microsoft</button>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="floating-card card-repos">
+        <div class="fc-header"><span class="fc-dot green"></span> Repositories</div>
+        <div class="fc-value" id="heroRepoCount">—</div>
+        <div class="fc-bars">
+          <div class="fc-bar" style="--w:85%;--c:#7c3aed"></div>
+          <div class="fc-bar" style="--w:60%;--c:#06b6d4"></div>
+          <div class="fc-bar" style="--w:40%;--c:#f59e0b"></div>
+        </div>
+      </div>
+      <div class="floating-card card-stars">
+        <div class="fc-header"><span class="fc-dot yellow"></span> Total Stars</div>
+        <div class="fc-value" id="heroStarCount">—</div>
+        <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
+          <polyline points="0,25 15,20 30,22 45,10 60,15 75,5 90,8 100,3" fill="none" stroke="url(#sparkGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#7c3aed"/>
+              <stop offset="100%" stop-color="#06b6d4"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="floating-card card-lang">
+        <div class="fc-header"><span class="fc-dot purple"></span> Top Language</div>
+        <div class="fc-lang-badges" id="heroLangBadges">
+          <span class="lang-badge" style="--lc:#3572A5">Python</span>
+          <span class="lang-badge" style="--lc:#3178c6">TypeScript</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== LOADING STATE ======================== -->
+  <div class="loading-overlay" id="loadingOverlay" style="display:none;">
+    <div class="loading-inner">
+      <div class="loader-ring"></div>
+      <p class="loading-text">Fetching GitHub data<span class="dots">...</span></p>
+    </div>
+  </div>
+
+  <!-- ======================== DASHBOARD ======================== -->
+  <main class="dashboard" id="dashboard" style="display:none;">
+    <div class="container">
+
+      <!-- PROFILE HEADER -->
+      <div class="profile-header glass-card" id="profileHeader">
+        <div class="profile-cover"></div>
+        <div class="profile-main">
+          <div class="profile-avatar-wrap">
+            <img id="profileAvatar" class="profile-avatar" src="" alt="Avatar" />
+            <div class="avatar-ring"></div>
+            <div class="avatar-status"></div>
+          </div>
+          <div class="profile-info">
+            <div class="profile-name-row">
+              <h1 class="profile-name" id="profileName">—</h1>
+              <span class="profile-login" id="profileLogin">@username</span>
+              <span class="profile-type-badge" id="profileTypeBadge">User</span>
+            </div>
+            <p class="profile-bio" id="profileBio">No bio available.</p>
+            <div class="profile-meta" id="profileMeta"></div>
+            <div class="profile-stats-row">
+              <div class="pstat">
+                <span class="pstat-val" id="followersCount">0</span>
+                <span class="pstat-label">Followers</span>
+              </div>
+              <div class="pstat-sep"></div>
+              <div class="pstat">
+                <span class="pstat-val" id="followingCount">0</span>
+                <span class="pstat-label">Following</span>
+              </div>
+              <div class="pstat-sep"></div>
+              <div class="pstat">
+                <span class="pstat-val" id="reposCount">0</span>
+                <span class="pstat-label">Repos</span>
+              </div>
+              <div class="pstat-sep"></div>
+              <div class="pstat">
+                <span class="pstat-val" id="totalStars">0</span>
+                <span class="pstat-label">Stars</span>
+              </div>
+            </div>
+          </div>
+          <div class="profile-actions">
+            <a id="profileGhLink" href="#" target="_blank" class="btn btn-primary">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+              View on GitHub
+            </a>
+            <button class="btn btn-ghost" id="shareBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              Share
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS CARDS ROW -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card glass-card" id="statCardRepos">
+          <div class="stat-icon" style="--icon-color:#7c3aed;--icon-bg:rgba(124,58,237,0.15)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value" id="sc-repos">0</div>
+            <div class="stat-label">Public Repos</div>
+          </div>
+          <div class="stat-trend up">▲ Active</div>
+        </div>
+        <div class="stat-card glass-card" id="statCardStars">
+          <div class="stat-icon" style="--icon-color:#f59e0b;--icon-bg:rgba(245,158,11,0.15)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value" id="sc-stars">0</div>
+            <div class="stat-label">Total Stars</div>
+          </div>
+          <div class="stat-trend up">▲ Trending</div>
+        </div>
+        <div class="stat-card glass-card" id="statCardForks">
+          <div class="stat-icon" style="--icon-color:#06b6d4;--icon-bg:rgba(6,182,212,0.15)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9"/><path d="M12 12v3"/></svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value" id="sc-forks">0</div>
+            <div class="stat-label">Total Forks</div>
+          </div>
+          <div class="stat-trend neutral">— Stable</div>
+        </div>
+        <div class="stat-card glass-card" id="statCardFollowers">
+          <div class="stat-icon" style="--icon-color:#10b981;--icon-bg:rgba(16,185,129,0.15)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value" id="sc-followers">0</div>
+            <div class="stat-label">Followers</div>
+          </div>
+          <div class="stat-trend up">▲ Growing</div>
+        </div>
+      </div>
+
+      <!-- MAIN CONTENT GRID -->
+      <div class="content-grid">
+
+        <!-- LEFT COLUMN -->
+        <div class="col-left">
+
+          <!-- CONTRIBUTION GRAPH -->
+          <div class="glass-card section-card" id="contribSection">
+            <div class="section-header">
+              <div class="section-title-row">
+                <h2 class="section-title">Contribution Activity</h2>
+                <span class="section-badge" id="contribBadge">—</span>
+              </div>
+              <span class="section-info" id="contribInfo">Commit activity over the past year</span>
+            </div>
+            <div class="contrib-graph" id="contribGraph">
+              <div class="contrib-loading">Loading contribution data…</div>
+            </div>
+            <div class="contrib-legend">
+              <span>Less</span>
+              <div class="legend-squares">
+                <div class="legend-sq" style="--sq-op:0.1"></div>
+                <div class="legend-sq" style="--sq-op:0.3"></div>
+                <div class="legend-sq" style="--sq-op:0.5"></div>
+                <div class="legend-sq" style="--sq-op:0.75"></div>
+                <div class="legend-sq" style="--sq-op:1"></div>
+              </div>
+              <span>More</span>
+            </div>
+          </div>
+
+          <!-- TOP REPOSITORIES -->
+          <div class="glass-card section-card" id="reposSection">
+            <div class="section-header">
+              <div class="section-title-row">
+                <h2 class="section-title">Top Repositories</h2>
+                <span class="section-badge" id="repoBadge">—</span>
+              </div>
+              <div class="repo-sort-btns">
+                <button class="sort-btn active" id="sortStars" data-sort="stars">⭐ Stars</button>
+                <button class="sort-btn" id="sortForks" data-sort="forks">🍴 Forks</button>
+                <button class="sort-btn" id="sortUpdated" data-sort="updated">🕒 Recent</button>
+              </div>
+            </div>
+            <div class="repos-list" id="reposList">
+              <p class="empty-state">No repositories found.</p>
+            </div>
+            <div class="view-more-row">
+              <a id="viewAllRepos" href="#" target="_blank" class="view-more-link">View all repositories →</a>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="col-right">
+
+          <!-- LANGUAGE BREAKDOWN -->
+          <div class="glass-card section-card" id="langSection">
+            <div class="section-header">
+              <h2 class="section-title">Languages</h2>
+            </div>
+            <div class="lang-chart-wrap">
+              <canvas id="langChart" width="200" height="200"></canvas>
+              <div class="lang-center-text">
+                <div id="langCenterName">—</div>
+                <div id="langCenterPct">—</div>
+              </div>
+            </div>
+            <div class="lang-list" id="langList"></div>
+          </div>
+
+          <!-- ORGANIZATION / MEMBERS -->
+          <div class="glass-card section-card" id="membersSection" style="display:none;">
+            <div class="section-header">
+              <h2 class="section-title">Members</h2>
+            </div>
+            <div class="members-grid" id="membersGrid"></div>
+          </div>
+
+          <!-- TOPICS / INTERESTS -->
+          <div class="glass-card section-card" id="topicsSection">
+            <div class="section-header">
+              <h2 class="section-title">Topics & Interests</h2>
+            </div>
+            <div class="topics-cloud" id="topicsCloud">
+              <p class="empty-state">No topics found.</p>
+            </div>
+          </div>
+
+          <!-- ACTIVITY FEED -->
+          <div class="glass-card section-card" id="activitySection">
+            <div class="section-header">
+              <h2 class="section-title">Recent Activity</h2>
+            </div>
+            <div class="activity-feed" id="activityFeed">
+              <p class="empty-state">No recent activity.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ======================== TOAST ======================== -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ======================== FOOTER ======================== -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <p>Built with ❤️ using the GitHub API &mdash; <strong>GitVision</strong></p>
+      <p class="footer-note">Data powered by <a href="https://api.github.com" target="_blank">api.github.com</a></p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
